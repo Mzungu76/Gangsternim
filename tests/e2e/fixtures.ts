@@ -18,7 +18,7 @@ export const test = base.extend<{ consoleErrors: string[] }>({
         );
       }
     });
-    await use(errors);
+    await use(errors); // eslint-disable-line react-hooks/rules-of-hooks -- fixture Playwright, non un hook React
   },
 });
 

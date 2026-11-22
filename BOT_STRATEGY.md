@@ -96,6 +96,6 @@ La motivazione è composta solo a partire dai fattori della mossa scelta e delle
 
 ## Prestazioni misurate
 
-Risultati delle simulazioni (≥ 1.000 partite per confronto) in [BALANCE_REPORT.md](BALANCE_REPORT.md). In sintesi: il Difficile batte nettamente il Facile; contro il Medio il vantaggio è piccolo (il gioco ha una forte componente di distribuzione iniziale e il Medio è già un buon giocatore "goloso").
+Risultati delle simulazioni (≥ 1.000 partite per confronto) in [BALANCE_REPORT.md](BALANCE_REPORT.md). In sintesi: il Difficile batte nettamente il Facile (72,9% a due giocatori). Contro il Medio vince di poco a due giocatori (53,8%), mentre con 3-4 giocatori **non è superiore al Medio** (nel tavolo Facile/Medio/Difficile il Medio vince il 46,6% contro il 35,4%): il Medio sfrutta meglio gli errori del giocatore precedente, e la distribuzione iniziale delle carte pesa molto. È un limite noto di questa versione.
 
 Tempi di decisione tipici del Difficile: pochi millisecondi a metà partita, fino a qualche centinaio di millisecondi nei finali calcolati esattamente.
