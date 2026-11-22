@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gangster-nim",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Self-reference richiesto da OpenNext: il nome deve coincidere con quello del Worker.
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "gangster-nim"
+    }
+  ],
+  "observability": { "enabled": true }
+}
