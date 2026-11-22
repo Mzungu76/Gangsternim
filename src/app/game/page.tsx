@@ -6,7 +6,6 @@ import { DebugPanel } from '@/components/game/DebugPanel';
 import { EndScreen } from '@/components/game/EndScreen';
 import { GangRow } from '@/components/game/GangRow';
 import { PlayerPanel } from '@/components/game/PlayerPanel';
-import { decideMove } from '@/game/bot/botEngine';
 import { getBoss } from '@/game/catalog';
 import { computeRanking } from '@/game/engine';
 import { cardsForTake, legalTakeCounts } from '@/game/gangs';
@@ -16,6 +15,7 @@ import type { Move } from '@/game/types';
 import { gameStore, useGameStore } from '@/lib/gameStore';
 import { updateSettings, useSettings } from '@/lib/settingsStore';
 import { BOT_DELAY_MS } from '@/lib/storage';
+import { decideInWorker } from '@/lib/workerClient';
 
 const ANIM_MS = 320;
 
@@ -70,13 +70,23 @@ export default function GamePage() {
     if (!game || game.status !== 'playing' || leaving) return;
     const p = game.players[game.currentPlayerIndex];
     if (p.type !== 'bot') return;
+    let cancelled = false;
+    const turn = game.turn;
     const timer = setTimeout(() => {
-      const t0 = performance.now();
-      const d = decideMove(game, p.id, p.difficulty ?? 'medium');
-      gameStore.logBot({ turn: game.turn, playerName: p.name, decision: d, ms: Math.round(performance.now() - t0) });
-      if (d.move) commitRef.current(d.move, p.id, d.reason);
+      decideInWorker(game, p.id, p.difficulty ?? 'medium')
+        .then(({ decision, ms }) => {
+          if (cancelled || gameStore.getState().game?.turn !== turn) return;
+          gameStore.logBot({ turn, playerName: p.name, decision, ms });
+          if (decision.move) commitRef.current(decision.move, p.id, decision.reason);
+        })
+        .catch((err) => {
+          if (!cancelled) gameStore.reportError(`Errore del BOT: ${String(err)}`);
+        });
     }, BOT_DELAY_MS[settingsRef.current.botSpeed]);
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [game, leaving]);
 
   if (!hydrated) {

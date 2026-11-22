@@ -88,6 +88,9 @@ export const gameStore = {
   logBot(entry: BotLogEntry) {
     set({ botLog: [...state.botLog.slice(-49), entry] });
   },
+  reportError(message: string) {
+    set({ lastError: message });
+  },
   clearError() {
     set({ lastError: null });
   },

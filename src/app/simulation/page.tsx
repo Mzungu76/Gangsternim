@@ -6,6 +6,7 @@ import { DIFFICULTY_LABEL } from '@/game/bot/botEngine';
 import { bossInsights, cardInsights, simulationReportMarkdown } from '@/game/report';
 import { createSimulationAccumulator, scoreHistogram, type SimulationConfig, type SimulationResult } from '@/game/simulation';
 import type { BotDifficulty } from '@/game/types';
+import { simulateInWorker, type SimulationJob } from '@/lib/workerClient';
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
@@ -21,15 +22,32 @@ export default function SimulationPage() {
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const stopRef = useRef(false);
+  const jobRef = useRef<SimulationJob | null>(null);
 
   const run = () => {
     const config: SimulationConfig = { bots, gangCount, henchmenMin: Math.min(hMin, hMax), henchmenMax: Math.max(hMin, hMax), games: Math.max(1, Math.min(20000, games)), seed };
-    const acc = createSimulationAccumulator(config);
     stopRef.current = false;
     setRunning(true);
     setResult(null);
     setError(null);
     setProgress(0);
+    const job = simulateInWorker(config, setProgress);
+    if (job) {
+      jobRef.current = job;
+      job.promise
+        .then((r) => {
+          setProgress(r.games);
+          setResult(r);
+        })
+        .catch((e) => setError(String(e)))
+        .finally(() => {
+          jobRef.current = null;
+          setRunning(false);
+        });
+      return;
+    }
+    // Fallback senza Web Worker: partite eseguite a blocchi sul thread principale.
+    const acc = createSimulationAccumulator(config);
     let i = 0;
     // Partite eseguite a blocchi per non bloccare l'interfaccia.
     const step = () => {
@@ -124,7 +142,7 @@ export default function SimulationPage() {
         </div>
         <div className="flex flex-wrap items-center gap-3 md:col-span-2">
           {running ? (
-            <button type="button" className="gn-btn gn-btn--danger" onClick={() => (stopRef.current = true)}><Square size={16} /> Interrompi</button>
+            <button type="button" className="gn-btn gn-btn--danger" onClick={() => { stopRef.current = true; jobRef.current?.stop(); }}><Square size={16} /> Interrompi</button>
           ) : (
             <button type="button" className="gn-btn" onClick={run} data-testid="sim-run"><Play size={16} /> Avvia simulazione</button>
           )}
