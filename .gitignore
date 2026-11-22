@@ -51,3 +51,4 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 scripts/.last-simulation.json
+/dist-standalone/

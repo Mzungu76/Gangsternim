@@ -12,7 +12,9 @@ function getWorker(): Worker | null {
   if (failed || typeof window === 'undefined' || typeof Worker === 'undefined') return null;
   if (!worker) {
     try {
-      worker = new Worker(new URL('./game.worker.ts', import.meta.url), { type: 'module' });
+      // La versione in file unico (scripts/build-standalone.ts) fornisce il worker come URL blob.
+      const injected = (globalThis as { __GN_WORKER_URL__?: string }).__GN_WORKER_URL__;
+      worker = injected ? new Worker(injected) : new Worker(new URL('./game.worker.ts', import.meta.url), { type: 'module' });
       worker.onmessage = (e) => handlers.get(e.data.id)?.(e.data);
       worker.onerror = () => {
         failed = true;

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import { PageShell } from '@/components/PageShell';
 import type { BotSpeed } from '@/game/types';
 import { gameStore, useGameStore } from '@/lib/gameStore';
@@ -48,32 +49,24 @@ export default function SettingsPage() {
           <h2 className="gn-title text-2xl">Dati salvati</h2>
           <p className="text-sm text-sand">Tutto resta nel tuo browser (LocalStorage): nessun server, nessun account.</p>
           <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="gn-btn gn-btn--danger"
+            <ConfirmButton
+              label="Elimina la partita in corso"
+              confirmLabel="Sì, elimina la partita"
               disabled={!game || game.status !== 'playing'}
-              onClick={() => {
-                if (confirm('Abbandonare la partita in corso? Non potrà essere ripresa.')) {
-                  gameStore.abandon();
-                  setMsg('Partita in corso eliminata.');
-                }
+              onConfirm={() => {
+                gameStore.abandon();
+                setMsg('Partita in corso eliminata.');
               }}
-            >
-              Elimina la partita in corso
-            </button>
-            <button
-              type="button"
-              className="gn-btn gn-btn--danger"
+            />
+            <ConfirmButton
+              label={`Cancella lo storico (${historyCount})`}
+              confirmLabel="Sì, cancella lo storico"
               disabled={historyCount === 0}
-              onClick={() => {
-                if (confirm(`Cancellare lo storico di ${historyCount} partite?`)) {
-                  clearHistory();
-                  setMsg('Storico cancellato.');
-                }
+              onConfirm={() => {
+                clearHistory();
+                setMsg('Storico cancellato.');
               }}
-            >
-              Cancella lo storico ({historyCount})
-            </button>
+            />
           </div>
           {msg ? <p role="status" className="text-gold-2">{msg}</p> : null}
         </section>

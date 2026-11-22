@@ -39,6 +39,7 @@ Altri comandi:
 | `npm run lint` · `npm run typecheck` | ESLint e TypeScript |
 | `npm run simulate` | simulazioni di bilanciamento (default 6 × 1.000 partite) → `BALANCE_REPORT.md` |
 | `npm run catalog:md` | rigenera `CARDS_CATALOG.md` dai dati |
+| `npm run build:standalone` | dopo `npm run build`, crea `dist-standalone/gangster-nim.html`: l'intera app in un solo file HTML (navigazione via ancora) |
 | `npm run preview` | build OpenNext + anteprima nel runtime Cloudflare (`workerd`) |
 | `npm run deploy` | build OpenNext + deploy su Cloudflare Workers (richiede credenziali) |
 

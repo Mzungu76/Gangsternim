@@ -1,6 +1,7 @@
 'use client';
 import { useMemo } from 'react';
 import Link from 'next/link';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import { PageShell } from '@/components/PageShell';
 import { DIFFICULTY_LABEL } from '@/game/bot/botEngine';
 import { clearHistory, useHistory } from '@/lib/historyStore';
@@ -32,9 +33,7 @@ export default function StatsPage() {
       title="Statistiche"
       actions={
         history.length ? (
-          <button type="button" className="gn-btn gn-btn--danger gn-btn--sm" onClick={() => { if (confirm('Cancellare tutto lo storico?')) clearHistory(); }} data-testid="clear-history">
-            Cancella storico
-          </button>
+          <ConfirmButton label="Cancella storico" confirmLabel="Sì, cancella tutto lo storico" onConfirm={clearHistory} className="gn-btn gn-btn--danger gn-btn--sm" testId="clear-history" />
         ) : null
       }
     >
