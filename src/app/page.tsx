@@ -1,69 +1,58 @@
-import Image from "next/image";
+'use client';
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { BarChart3, BookOpen, FlaskConical, LibraryBig, Play, RotateCcw, Settings, Wrench } from 'lucide-react';
+import { BossCardView, HenchmanCardView } from '@/components/cards/GameCard';
+import { getBoss, getHenchman } from '@/game/catalog';
+import { gameStore, useGameStore } from '@/lib/gameStore';
 
 export default function Home() {
+  const { game, hydrated } = useGameStore();
+  useEffect(() => gameStore.hydrate(), []);
+  const canContinue = hydrated && game?.status === 'playing';
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pb-12 pt-10 sm:pt-16">
+      <div className="text-center">
+        <p className="gn-type text-sm tracking-[0.3em] text-sand">CHICAGO · 1929</p>
+        <h1 className="gn-title mt-2 text-5xl leading-none sm:text-7xl" data-testid="logo">
+          GANGSTER
+          <span className="block text-ivory">NIM</span>
+        </h1>
+        <p className="mx-auto mt-4 max-w-md text-cream">
+          Porta via gli scagnozzi alle famiglie rivali, costruisci la banda migliore e lascia agli altri il Boss… e il suo conto da pagare.
+        </p>
+      </div>
+
+      <div className="pointer-events-none my-8 flex items-end justify-center gap-2 sm:gap-4" aria-hidden>
+        <div className="-rotate-6"><HenchmanCardView card={getHenchman('h-cecchino')} size="sm" /></div>
+        <div className="-translate-y-3"><BossCardView card={getBoss('boss-padrino')} size="md" /></div>
+        <div className="rotate-6"><HenchmanCardView card={getHenchman('h-vecchio-scassinatore')} size="sm" /></div>
+      </div>
+
+      <nav className="grid w-full max-w-md gap-3" aria-label="Menu principale">
+        <Link href="/setup" className="gn-btn text-lg" data-testid="new-game">
+          <Play size={20} /> Nuova partita
+        </Link>
+        {canContinue ? (
+          <Link href="/game" className="gn-btn gn-btn--ghost" data-testid="continue-game">
+            <RotateCcw size={18} /> Continua partita (turno {game!.turn})
+          </Link>
+        ) : (
+          <button type="button" className="gn-btn gn-btn--ghost" disabled data-testid="continue-game" title="Nessuna partita salvata">
+            <RotateCcw size={18} /> Continua partita
+            <span className="text-xs normal-case tracking-normal opacity-80">— nessuna partita in corso</span>
+          </button>
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          <Link href="/catalog" className="gn-btn gn-btn--ghost"><LibraryBig size={18} /> Catalogo</Link>
+          <Link href="/rules" className="gn-btn gn-btn--ghost"><BookOpen size={18} /> Regolamento</Link>
+          <Link href="/settings" className="gn-btn gn-btn--ghost"><Settings size={18} /> Impostazioni</Link>
+          <Link href="/stats" className="gn-btn gn-btn--ghost"><BarChart3 size={18} /> Statistiche</Link>
+          <Link href="/simulation" className="gn-btn gn-btn--ghost"><FlaskConical size={18} /> Simulazione</Link>
+          <Link href="/debug" className="gn-btn gn-btn--ghost"><Wrench size={18} /> Modalità test</Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </nav>
+    </main>
   );
 }
