@@ -138,3 +138,25 @@ test('regolamento e impostazioni', async ({ page, consoleErrors }) => {
   await expect(page.getByTestId('setting-showDebugPanel')).toBeChecked();
   expect(consoleErrors).toEqual([]);
 });
+
+test('carte: il bonus è scritto sulla carta e il pulsante ⓘ apre i dettagli con le combo', async ({ page, consoleErrors }) => {
+  await page.goto('/debug');
+  await page.getByTestId('scenario-combo-vicina').click();
+  await expect(page.getByTestId('table')).toBeVisible();
+  const cecchino = page.getByTestId('card-h-orecchio-fino');
+  await expect(cecchino.getByTestId('card-effect')).toHaveText('+2 se nella prima presa della gang');
+  const boss = page.locator('[data-testid^=gang-gang-]').first().getByTestId('card-effect').first();
+  await expect(boss).toContainText('Chi prende l\'ultimo Scagnozzo subisce');
+  await page.getByTestId('info-h-orecchio-fino').click();
+  const dlg = page.getByTestId('card-detail');
+  await expect(dlg).toBeVisible();
+  await expect(dlg).toContainText('Come si fanno le combo');
+  await expect(dlg).toContainText('Quartetto');
+  await expect(dlg).toContainText('Condizione:');
+  await page.keyboard.press('Escape');
+  await expect(dlg).toBeHidden();
+  await page.getByTestId('combo-help').locator('summary').click();
+  await expect(page.getByTestId('combo-help')).toContainText('3 carte = Tris +5');
+  expect(await noOverflow(page)).toBe(true);
+  expect(consoleErrors).toEqual([]);
+});

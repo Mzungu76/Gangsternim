@@ -5,6 +5,7 @@ import { DIFFICULTY_LABEL } from '@/game/bot/botEngine';
 import { getBoss, getHenchman } from '@/game/catalog';
 import type { ScoreBreakdown } from '@/game/scoring';
 import type { PlayerState } from '@/game/types';
+import { openCardDetail } from '@/lib/cardDetail';
 import { BossCardView, HenchmanCardView } from '../cards/GameCard';
 import { ActiveBonuses, ComboList, ScoreSummary } from './ScoreDetails';
 
@@ -46,12 +47,12 @@ export function PlayerPanel({ player, score, active, defaultOpen = false }: { pl
         <div className="grid gap-4 border-t border-gold/20 p-3">
           <ScoreSummary s={score} />
           <div>
-            <h4 className="gn-label">Carte conquistate</h4>
+            <h4 className="gn-label">Carte conquistate <span className="normal-case tracking-normal text-sand">(tocca una carta per i dettagli)</span></h4>
             {player.henchmen.length || player.bosses.length ? (
               <div className="gn-scroll-x pb-2">
                 <div className="flex w-max gap-1.5">
-                  {player.bosses.map((b) => <BossCardView key={b.cardId} card={getBoss(b.cardId)} size="mini" />)}
-                  {player.henchmen.map((c) => <HenchmanCardView key={c.cardId} card={getHenchman(c.cardId)} size="mini" />)}
+                  {player.bosses.map((b) => <BossCardView key={b.cardId} card={getBoss(b.cardId)} size="mini" onClick={() => openCardDetail(getBoss(b.cardId))} />)}
+                  {player.henchmen.map((c) => <HenchmanCardView key={c.cardId} card={getHenchman(c.cardId)} size="mini" onClick={() => openCardDetail(getHenchman(c.cardId))} />)}
                 </div>
               </div>
             ) : (

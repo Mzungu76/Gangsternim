@@ -45,3 +45,19 @@ describe('catalogo', () => {
       expect(used.has(t as never)).toBe(true);
   });
 });
+
+describe('testo breve stampato sulla carta', () => {
+  it('esiste per ogni Scagnozzo, è breve e cita i numeri dell\'effetto', async () => {
+    const { shortEffect } = await import('@/game/effects');
+    for (const c of HENCHMEN) {
+      const t = shortEffect(c);
+      expect(t.length).toBeGreaterThan(8);
+      expect(t.length).toBeLessThanOrEqual(62);
+    }
+    const by = (id: string) => HENCHMEN.find((c) => c.id === id)!;
+    expect(shortEffect(by('h-vecchio-scassinatore'))).toBe('+2 se hai un altro Scassinatore');
+    expect(shortEffect(by('h-autista'))).toBe('+3 se hai un altro Autista');
+    expect(shortEffect(by('h-informatore'))).toContain('+2 per ogni specializzazione diversa');
+    expect(shortEffect(by('h-avvocato'))).toBe('Riduce di 2 il malus di un Boss');
+  });
+});

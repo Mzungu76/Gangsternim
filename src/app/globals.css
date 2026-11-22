@@ -173,6 +173,62 @@ button.gn-card {
   height: 62%;
 }
 
+.gn-card__effect {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-height: 24cqw;
+  padding: 2cqw 3cqw;
+  border-radius: 3.5cqw;
+  background: rgba(74, 52, 35, 0.1);
+  border: max(1px, 0.7cqw) solid rgba(18, 12, 8, 0.35);
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: 8.6cqw;
+  line-height: 1.15;
+  color: #24160c;
+  text-wrap: balance;
+}
+
+.gn-card__effect[data-timing="immediate"] {
+  background: rgba(201, 162, 74, 0.28);
+}
+
+.gn-card__effect[data-timing="permanent"] {
+  background: rgba(29, 79, 79, 0.18);
+}
+
+.gn-card__effect[data-timing="combo"] {
+  background: rgba(142, 31, 31, 0.14);
+}
+
+.gn-card--mini .gn-card__effect {
+  display: none;
+}
+
+.gn-info-btn {
+  position: absolute;
+  top: 2.5cqw;
+  right: 2.5cqw;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-gold-2);
+  border: 2px solid var(--color-gold);
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gn-info-btn:hover {
+  background: var(--color-bordeaux);
+}
+
 .gn-card__foot {
   display: flex;
   align-items: center;
@@ -199,10 +255,9 @@ button.gn-card {
 .gn-card__info {
   font-family: var(--font-label);
   font-weight: 600;
-  font-size: 8.6cqw;
+  font-size: 8cqw;
   line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   text-align: right;
   min-width: 0;
 }
@@ -471,4 +526,9 @@ button.gn-card {
   50% {
     opacity: 0.2;
   }
+}
+
+/* Spazio per il pulsante ⓘ accanto al nome della carta */
+.gn-with-info .gn-card__head {
+  padding-right: 21cqw;
 }

@@ -2,7 +2,28 @@ import { Skull } from 'lucide-react';
 import { getBoss, getHenchman } from '@/game/catalog';
 import { legalTakeCounts } from '@/game/gangs';
 import type { GangState, PlayerState } from '@/game/types';
+import { openCardDetail } from '@/lib/cardDetail';
+import type { Card } from '@/game/types';
 import { BossCardView, HenchmanCardView } from '../cards/GameCard';
+
+/** Carta con pulsante ⓘ per aprire il dettaglio (il pulsante non seleziona la gang). */
+function WithInfo({ card, children }: { card: Card; children: React.ReactNode }) {
+  return (
+    <span className="gn-with-info relative block shrink-0">
+      {children}
+      <button
+        type="button"
+        className="gn-info-btn"
+        aria-label={`Dettagli di ${card.name}`}
+        title="Dettagli e combo"
+        onClick={() => openCardDetail(card)}
+        data-testid={`info-${card.id}`}
+      >
+        i
+      </button>
+    </span>
+  );
+}
 
 interface Props {
   gang: GangState;
@@ -52,26 +73,30 @@ export function GangRow({ gang, selectable, selected, previewCount, leavingIds, 
       </header>
       <div className="gn-scroll-x -mx-1 px-1 pb-2 pt-3">
         <div className="flex w-max items-end gap-2 sm:gap-3">
-          <BossCardView
-            card={boss}
-            size="sm"
-            className={capturesBoss ? 'is-boss-risk' : ''}
-            onClick={selectable && !gang.eliminated ? onSelect : undefined}
-            ariaExtra={selectable ? 'seleziona questa gang' : undefined}
-          />
+          <WithInfo card={boss}>
+            <BossCardView
+              card={boss}
+              size="sm"
+              className={capturesBoss ? 'is-boss-risk' : ''}
+              onClick={selectable && !gang.eliminated ? onSelect : undefined}
+              ariaExtra={selectable ? 'seleziona questa gang' : undefined}
+            />
+          </WithInfo>
           <span className="mx-0.5 h-24 w-px self-center bg-gold/30" aria-hidden />
           {gang.henchmen.map((id, i) => {
             const target = previewCount > 0 && i >= targetStart;
+            const c = getHenchman(id);
             return (
-              <HenchmanCardView
-                key={id}
-                card={getHenchman(id)}
-                size="sm"
-                testId={`card-${id}`}
-                onClick={selectable ? onSelect : undefined}
-                ariaExtra={target ? 'verrà prelevata' : undefined}
-                className={`${target ? 'is-target' : ''} ${leavingIds.includes(id) ? 'is-leaving' : ''}`}
-              />
+              <WithInfo key={id} card={c}>
+                <HenchmanCardView
+                  card={c}
+                  size="sm"
+                  testId={`card-${id}`}
+                  onClick={selectable ? onSelect : undefined}
+                  ariaExtra={target ? 'verrà prelevata' : undefined}
+                  className={`${target ? 'is-target' : ''} ${leavingIds.includes(id) ? 'is-leaving' : ''}`}
+                />
+              </WithInfo>
             );
           })}
           {gang.henchmen.length === 0 ? <p className="px-2 py-6 text-sm text-sand">Nessuno Scagnozzo rimasto.</p> : null}

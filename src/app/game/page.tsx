@@ -2,11 +2,12 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bug, Check, Home, MessageSquareText, X } from 'lucide-react';
+import { CardDetailHost } from '@/components/cards/CardDetailHost';
 import { DebugPanel } from '@/components/game/DebugPanel';
 import { EndScreen } from '@/components/game/EndScreen';
 import { GangRow } from '@/components/game/GangRow';
 import { PlayerPanel } from '@/components/game/PlayerPanel';
-import { getBoss } from '@/game/catalog';
+import { COMBOS, getBoss } from '@/game/catalog';
 import { computeRanking } from '@/game/engine';
 import { cardsForTake, legalTakeCounts } from '@/game/gangs';
 import { randomSeed } from '@/game/rng';
@@ -184,6 +185,14 @@ export default function GamePage() {
             {lastError ? <p role="alert" className="mt-1 text-sm text-[#ff8a7a]">{lastError}</p> : null}
           </div>
 
+          <details className="gn-panel mb-4 px-3 py-2 text-sm" data-testid="combo-help">
+            <summary className="cursor-pointer text-sand">Come funzionano le combo</summary>
+            <p className="mt-2">
+              Ogni carta ha una specializzazione (icona e nome in basso a destra). Carte della <b>stessa specializzazione</b> formano una combo:{' '}
+              {COMBOS.map((c) => `${c.size} carte = ${c.name} +${c.points}`).join(', ')}. Il testo nel riquadro di ogni carta spiega il suo bonus; tocca <b>ⓘ</b> per i dettagli.
+            </p>
+          </details>
+
           {ranking ? (
             <div className="mb-6">
               <EndScreen
@@ -249,6 +258,7 @@ export default function GamePage() {
           </div>
         </div>
       ) : null}
+      <CardDetailHost />
     </div>
   );
 }

@@ -260,3 +260,52 @@ export function evaluateConditional(card: HenchmanCard, ctx: CollectionContext):
       return 0;
   }
 }
+
+/**
+ * Testo breve dell'effetto, stampato sulla carta. Generato dagli stessi dati
+ * tipizzati del motore, quindi sempre coerente con il calcolo dei punteggi.
+ */
+export function shortEffect(card: HenchmanCard): string {
+  const e = card.effect;
+  const sp = (s: Specialization | 'self', plural = false) => specName(s, card, plural);
+  const same = (s: Specialization | 'self') => resolveSpec(s, card) === card.specialization;
+  switch (e.type) {
+    case 'none':
+      return 'Nessun bonus: vale solo i suoi punti.';
+    case 'withSpec':
+      if (e.minCount === 1) return `${signed(e.bonus)} se hai ${same(e.spec) ? 'un altro' : 'un'} ${sp(e.spec)}`;
+      return `${signed(e.bonus)} se hai ${e.minCount} ${same(e.spec) ? 'altri ' : ''}${sp(e.spec, true)}`;
+    case 'perSpecCard':
+      return `+${e.perCard} per ogni ${same(e.spec) ? 'altro ' : ''}${sp(e.spec)} (max +${e.max})`;
+    case 'perDistinctSpec':
+      return `+${e.perSpec} per ogni specializzazione diversa (max +${e.max})`;
+    case 'withoutSpec':
+      return `${signed(e.bonus)} se non hai ${sp(e.spec, true)}`;
+    case 'perBoss':
+      return `+${e.perBoss} per ogni Boss conquistato (max +${e.max})`;
+    case 'noBoss':
+      return `+${e.bonus} se non hai conquistato Boss`;
+    case 'malusReduction':
+      return `Riduce di ${e.amount} il malus di un Boss`;
+    case 'majority':
+      return `${signed(e.bonus)} se hai più ${sp(e.spec, true)} di ogni avversario`;
+    case 'collectionSize':
+      return `+${e.bonus} ogni ${e.every} Scagnozzi posseduti (max +${e.max})`;
+    case 'captureSize':
+      return `${signed(e.bonus)} se presa in ${e.minTaken}+ carte`;
+    case 'lastHenchman':
+      return `${signed(e.bonus)} se è l'ultimo della fila`;
+    case 'firstTake':
+      return `${signed(e.bonus)} se nella prima presa della gang`;
+    case 'comboWildcard':
+      return 'Jolly: vale come qualsiasi specializzazione nelle combo';
+    case 'comboBooster': {
+      const c = e.minComboSize === 2 ? 'una Coppia' : e.minComboSize === 3 ? 'un Tris' : `una combo da ${e.minComboSize}`;
+      return `${signed(e.bonus)} se completi ${c} di ${sp(e.spec, true)}`;
+    }
+    default: {
+      const t: never = e;
+      throw new Error(`Effetto sconosciuto ${(t as { type: string }).type}`);
+    }
+  }
+}
